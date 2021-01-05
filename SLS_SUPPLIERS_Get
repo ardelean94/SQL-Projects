@@ -1,0 +1,12 @@
+CREATE PROCEDURE [dbo].[SLS_SUPPLIERS_Get]
+	@User_ID BIGINT
+AS
+BEGIN
+
+
+	SELECT GS.ID AS Customer_ID, GS.Type_ID AS CustomerType_ID, GST.Name AS CustomerTypeName,
+		GS.Name AS CustomerName, GS.Code AS CustomerCode, GS.Email AS CustomerEmail
+	FROM GEN_SUPPLIERS GS
+	INNER JOIN GEN_SUPPLIER_TYPES GST ON GST.ID=GS.Type_ID AND GST.Active=1
+
+END
