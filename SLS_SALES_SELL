@@ -1,0 +1,49 @@
+CREATE PROCEDURE [dbo].[SLS_SALES_SELL]
+	@Stock_ID BIGINT,
+	@Customer_ID BIGINT,
+	@Qty DECIMAL(16,4),
+	@User_ID BIGINT,
+	@Response BIGINT OUTPUT,
+	@ResponseMessage VARCHAR(250) OUTPUT
+AS
+BEGIN
+
+	SET NOCOUNT ON
+
+	--Check if stock avaiable
+	DECLARE @Checker BIGINT
+
+	SELECT @Checker = 
+		CASE 
+			WHEN @Qty > SS.Qty THEN -1 --if quantity requested is greater than the quantity avaiable
+		ELSE SS.Qty
+		END
+	FROM SLS_STOCKS SS
+	WHERE SS.ID=@Stock_ID
+
+	--SELECT @Checker
+
+	IF @Checker > 0
+	BEGIN
+
+		--When a customer proceeded to checkout we insert data in this table
+		INSERT INTO SLS_SALES (Stock_ID, Customer_ID, Qty, InsertedBy_ID, InsertedDate)
+		VALUES (@Stock_ID, @Customer_ID, @Qty, @User_ID, GETDATE())
+
+		SET @Response=1
+
+	END
+	ELSE
+	BEGIN
+		
+		SET @Response=-1
+		SET @ResponseMessage='The quantity requested is not available, please choose maximum ' + CAST(@Checker AS VARCHAR(50)) + '.'
+		RETURN
+
+	END
+
+
+	--Decrease the stock
+	EXEC SLS_STOCKS_UpdateStocks @Stock_ID, @Qty, @User_ID
+
+END
