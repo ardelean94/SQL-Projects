@@ -1,0 +1,15 @@
+CREATE PROCEDURE [dbo].[SLS_STOCKS_UpdateStocks]
+	@Stock_ID BIGINT,
+	@Qty DECIMAL(16,4),
+	@User_ID BIGINT
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	UPDATE SLS_STOCKS SET
+		Qty -= @Qty,
+		ChangedBy_ID=@User_ID,
+		ChangedDate=GETDATE()
+	WHERE ID=@Stock_ID
+
+END
