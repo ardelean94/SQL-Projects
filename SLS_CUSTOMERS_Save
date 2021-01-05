@@ -1,0 +1,44 @@
+CREATE PROCEDURE [dbo].[SLS_CUSTOMERS_Save]
+	@ID BIGINT = NULL,
+	@Type_ID BIGINT,
+	@Name VARCHAR(250),
+	@Code VARCHAR(50),
+	@Email VARCHAR(50),
+	@Response BIGINT OUTPUT,
+	@ResponseMessage VARCHAR(250) OUTPUT
+AS
+BEGIN
+
+	SET NOCOUNT ON
+
+	IF @ID IS NULL
+	BEGIN
+
+		INSERT INTO GEN_CUSTOMERS (Type_ID, Name, Code, Email, Active)
+		VALUES (@Type_ID, @Name, @Code, @Email, 1)
+
+	END
+	ELSE
+	BEGIN
+		
+		UPDATE GEN_CUSTOMERS SET
+			Type_ID=@Type_ID,
+			Name=@Name,
+			Code=@Code,
+			Email=@Email
+		WHERE ID=@ID
+
+	END
+
+	IF @@ERROR <> 0
+	BEGIN
+		SET @Response=-1
+		SET @ResponseMessage='Inconsistency on transaction. Please contact the system administrator.'
+	END
+	ELSE
+	BEGIN
+		SET @Response=1
+		SET @ResponseMessage='The transaction was successfully done.'
+	END
+
+END
