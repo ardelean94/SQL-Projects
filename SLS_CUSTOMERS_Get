@@ -1,0 +1,12 @@
+CREATE PROCEDURE [dbo].[SLS_CUSTOMERS_Get]
+	@User_ID BIGINT
+AS
+BEGIN
+
+
+	SELECT GC.ID AS Customer_ID, GC.Type_ID AS CustomerType_ID, GCT.Name AS CustomerTypeName,
+		GC.Name AS CustomerName, GC.Code AS CustomerCode, GC.Email AS CustomerEmail
+	FROM GEN_CUSTOMERS GC
+	INNER JOIN GEN_CUSTOMER_TYPES GCT ON GCT.ID=GC.Type_ID AND GCT.Active=1
+
+END
