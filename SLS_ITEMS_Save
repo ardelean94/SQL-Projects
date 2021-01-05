@@ -1,0 +1,44 @@
+CREATE PROCEDURE [dbo].[SLS_ITEMS_Save]
+	@ID BIGINT = NULL,
+	@Type_ID BIGINT,
+	@Supplier_ID BIGINT,
+	@Name VARCHAR(250),
+	@Code VARCHAR(50),
+	@Response BIGINT OUTPUT,
+	@ResponseMessage VARCHAR(250) OUTPUT
+AS
+BEGIN
+
+	SET NOCOUNT ON
+
+	IF @ID IS NULL
+	BEGIN
+
+		INSERT INTO GEN_ITEMS(Type_ID, Supplier_ID, Name, Code, Active)
+		VALUES (@Type_ID, @Supplier_ID, @Name, @Code, 1)
+
+	END
+	ELSE
+	BEGIN
+		
+		UPDATE GEN_ITEMS SET
+			Type_ID=@Type_ID,
+			Supplier_ID=@Supplier_ID,
+			Name=@Name,
+			Code=@Code
+		WHERE ID=@ID
+
+	END
+
+	IF @@ERROR <> 0
+	BEGIN
+		SET @Response=-1
+		SET @ResponseMessage='Inconsistency on transaction. Please contact the system administrator.'
+	END
+	ELSE
+	BEGIN
+		SET @Response=1
+		SET @ResponseMessage='The transaction was successfully done.'
+	END
+
+END
