@@ -1,0 +1,25 @@
+CREATE PROCEDURE [dbo].[SLS_STOCKS_ImportStocks]
+	@Item_ID BIGINT,
+	@Qty DECIMAL(16,4),
+	@User_ID BIGINT,
+	@Response BIGINT OUTPUT,
+	@ResponseMessage VARCHAR(250) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	INSERT INTO SLS_STOCKS (Item_ID, Qty, InsertedBy_ID, InsertedDate)
+	VALUES (@Item_ID, @Qty, @User_ID, GETDATE())
+
+	IF @@ERROR <> 0
+	BEGIN
+		SET @Response=-1
+		SET @ResponseMessage='Inconsistency on importing stocks on the item ' + @Item_ID + '.'
+	END
+	ELSE
+	BEGIN
+		SET @Response=1
+		SET @ResponseMessage='Stocks imported successfully.'
+	END
+
+END
